@@ -8,26 +8,24 @@ int run(char ** argv) {
 
     int fd[2];
     pipe(fd);
+	pid_t pid;
+	int status;
+	
+	if ((pid = fork()) == -1) {
+		perror("fork error");
+		exit(EXIT_FAILURE);
+	}
     
-    char buf[256];
-    
-    if(fork() == 0) // child
+    if(pid == 0) // child
     {    
-        dup2(0, fd[1]);
-		close(1);
+        dup2(1, fd[1]);
+		close(0);
         execute(argv, subpaths);
-    } 
-    else 
-    {
-        dup2(1, fd[0]);
-        close(0);
-        
-        while(read(fd[0], buf, 256) > 0 ) {
-            printf("OUTPUT: %s", buf);
-        }
+    } else {
+		wait(&status);
+		
+		free2d((void**)subpaths);
     }
-
-    free2d((void**)subpaths);
 
 	return 1;
 }
