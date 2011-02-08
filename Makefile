@@ -14,3 +14,6 @@ main: $(OBJ)
 
 clean: 
 	rm -f *.o; rm main
+
+all:
+	make clean; make
