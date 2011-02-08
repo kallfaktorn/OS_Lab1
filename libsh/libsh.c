@@ -20,7 +20,9 @@ int run(char ** argv, int background) {
     {    
         dup2(1, fd[1]);
 		dup2(0, fd[0]);
-        execute(argv, subpaths);
+		if(execute(argv, subpaths) == -1) {
+			fprintf(stderr, "Command not found.\n");
+		}
     } else {
 	
 		if(background != 1)
@@ -46,8 +48,6 @@ int execute(char** argv, char** paths)
         i++;
     }
 
-	free(argv);
-    
     return ret;
 }
     

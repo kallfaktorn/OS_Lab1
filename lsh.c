@@ -54,8 +54,13 @@ int main(void)
 			/* execute it */
 			n = parse(line, &cmd);
 			PrintCommand(n, &cmd);
-			char ** argv = cmd.pgm->pgmlist;
-			run(argv, cmd.bakground);
+			if(n < 0)
+			{
+				fprintf(stderr, "Parse error\n");
+			} else {
+				char ** argv = cmd.pgm->pgmlist;
+				run(argv, cmd.bakground);
+			}
 	    }
 	}
 	
