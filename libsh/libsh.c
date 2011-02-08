@@ -4,8 +4,7 @@ int run(char ** argv) {
 	
 	char * path = getenv("PATH");
 
-    char** subpaths;
-    subpaths = splitstr(path, ':');
+    char** subpaths = splitstr(path, ':');
 
     int fd[2];
     pipe(fd);
@@ -33,10 +32,10 @@ int run(char ** argv) {
 	return 1;
 }
 
-int execute(const char** argv, char** paths)
+int execute(char** argv, char** paths)
 {
 	// try to execute the command
-    i = 0;
+    int i = 0;
     int ret = -1;
     while(paths[i])
     {
@@ -52,7 +51,7 @@ int execute(const char** argv, char** paths)
     return ret;
 }
     
-int ex_path(char** argv, const char* path)
+int ex_path(char** argv, char* path)
 {
     const char* cmd;
     cmd = concat(path, "/");
