@@ -55,7 +55,7 @@ int main(void)
 			n = parse(line, &cmd);
 			PrintCommand(n, &cmd);
 			char ** argv = cmd.pgm->pgmlist;
-			run(argv);
+			run(argv, cmd.bakground);
 	    }
 	}
 	

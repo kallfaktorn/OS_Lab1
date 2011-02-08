@@ -1,6 +1,6 @@
 #include "libsh.h"
 
-int run(char ** argv) {
+int run(char ** argv, int background) {
 	
 	char * path = getenv("PATH");
 
@@ -22,7 +22,9 @@ int run(char ** argv) {
 		close(0);
         execute(argv, subpaths);
     } else {
-		wait(&status);
+	
+		if(background != 1)
+			wait(&status);
 		
 		free2d((void**)subpaths);
     }
