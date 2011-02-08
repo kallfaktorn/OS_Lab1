@@ -2,7 +2,7 @@ IDIR= ./libsh
 LDIR= ./libsh
 VPATH= ./libsh
 CC=cc
-CFLAGS= -g -I$(IDIR)
+CFLAGS= -g -I$(IDIR) -Wall
 DEPS= libsh.h
 OBJ= main.o libsh.o 
 

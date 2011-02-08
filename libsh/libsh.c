@@ -1,31 +1,41 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "libsh.h"
 
-int execute(const char* command, const char* argv, char** paths)
+int execute(const char* command, const char* args, char** paths)
 {
-    int i = 0;
+	char ** arga = splitstr(args, ' ');
+	int argc = array_length((void **)arga);
+	char** argv = calloc(argc + 1, sizeof(char) * (strlen(args) + strlen(command)));
+	
+	int i = 0;
+	strcpy(argv[i], command);
+	for(i = 1; i < ( argc + 1 ); i++) {
+		strcpy(argv[i], arga[i-1]);
+	}
+	
+	free(arga);
+	
+    i = 0;
     int ret = -1;
     while(paths[i])
     {
+		
         ret = ex_path(command, argv, paths[i]); 
         if (ret == 0)
             break;
         i++;
     }
+
+	free(argv);
     
     return ret;
 }
     
-int ex_path(const char* command, const char* argv, const char* path)
+int ex_path(const char* command, char** argv, const char* path)
 {
     const char* cmd;
     cmd = concat(path, "/");
     cmd = concat(cmd, command);
-	char ** arg = splitstr(argv, ' ');
-	fprintf(stderr, "p: %s %s\n", cmd, argv);
-    return execvp(cmd, arg);
+    return execvp(cmd, argv);
 }
                                     
 int count(const char* str, char delm)
@@ -59,7 +69,7 @@ char** splitstr(const char* str, char delm)
     int i = 0;
     int j = 0;
 
-    while(c = *(str++))
+    while((c = *(str++)) != '\0')
     {
         if(c == delm)
         {
@@ -93,5 +103,13 @@ int free2d(void ** src)
     free(src);
 
     return 0;
+}
+
+int array_length(void ** array) {
+	int i = 0;
+	while(array[i])
+		i++;
+		
+	return i;
 }
                                          
