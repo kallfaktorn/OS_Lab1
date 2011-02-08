@@ -3,17 +3,25 @@ LDIR= ./libsh
 VPATH= ./libsh
 CC=cc
 CFLAGS= -g -I$(IDIR) -Wall
-DEPS= libsh.h
-OBJ= main.o libsh.o 
+DEPS= parse.h libsh.h 
+
+OBJ_MAIN= main.o libsh.o 
+OBJ_LSH= parse.o lsh.o
+
+LIBS= -lreadline -lncurses
+BIN= lsh
 
 %.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-main: $(OBJ)
-	cc -o $@ $^ $(CFLAGS) $(LIBS)
+main: $(OBJ_MAIN)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+lsh: $(OBJ_LSH)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 clean: 
-	rm -f *.o; rm main
+	rm -f *.o; rm main; rm lsh
 
 all:
-	make clean; make
+	make clean; make; make lsh
