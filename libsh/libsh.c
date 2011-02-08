@@ -87,3 +87,18 @@ char** splitstr(const char* str, char delm)
     
     return retarr;
 }
+
+int free2d(void ** src)
+{
+    int i = 0;
+    while(src[i])
+    {
+        free(src[i]);
+        i++;
+    }
+
+    free(src);
+
+    return 0;
+}
+                                         

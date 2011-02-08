@@ -1,27 +1,14 @@
-#
-# Sample Makefile for lsh
-# lab1 in Operating System course
-#
-BIN=	lsh
+IDIR= ./libsh
+LDIR= ./libsh
+VPATH= ./libsh
+CC=gcc
+CFLAGS= -I$(IDIR)
+DEPS= libsh.h
+OBJ= main.o libsh.o 
 
-SRCS=	parse.c lsh.c
-OBJS=	parse.o lsh.o
+%.o: %.c $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
-CC=	gcc
-CFLAGS= -g 
-## Turn on this for more warnings:
-#CFLAGS= -g -Wall -pedantic
-LIBS= -lreadline -lncurses
+main: $(OBJ)
+	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
-.SUFFIXES: .c .o
-
-.c.o:
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $<
-
-all:	$(BIN)
-
-lsh:	$(OBJS)
-	$(CC) $(CFLAGS) -o $(BIN) $(OBJS) $(LIBS)
-
-clean:
-	-rm -f $(OBJS) lsh
