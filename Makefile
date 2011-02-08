@@ -6,7 +6,7 @@ CFLAGS= -g -I$(IDIR) -Wall
 DEPS= parse.h libsh.h 
 
 OBJ_MAIN= main.o libsh.o 
-OBJ_LSH= parse.o lsh.o
+OBJ_LSH= parse.o lsh.o libsh.o
 
 LIBS= -lreadline -lncurses
 BIN= lsh
