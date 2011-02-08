@@ -5,14 +5,9 @@
 #include <sys/types.h>
 #include "libsh.h"
 
-//Max length of a path.
-#define MAX 100
-
 int main(int argc, char** argv)
 {
     char * path = getenv("PATH");
-
-    printf("%s\n", path);
 
     char** subpaths;
     subpaths = splitstr(path, ':');
@@ -37,7 +32,6 @@ int main(int argc, char** argv)
             printf("OUTPUT: %s", buf);
         }
     }
-    
 
     free2d((void**)subpaths);
     return 0; 
