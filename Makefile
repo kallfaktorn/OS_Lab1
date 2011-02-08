@@ -12,3 +12,5 @@ OBJ= main.o libsh.o
 main: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
+clean: 
+	rm -f *.o; rm main
