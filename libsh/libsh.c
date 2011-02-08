@@ -10,12 +10,8 @@ int execute(const char* command, const char* argv, char** paths)
     while(paths[i])
     {
         ret = ex_path(command, argv, paths[i]); 
-		fprintf(stderr, "r: %i\n", ret);
         if (ret == 0)
-        {
-            //printf("%i\n",ret);
             break;
-        }
         i++;
     }
     
@@ -27,9 +23,8 @@ int ex_path(const char* command, const char* argv, const char* path)
     const char* cmd;
     cmd = concat(path, "/");
     cmd = concat(cmd, command);
-    char * arg[1];
-	arg[0] = "ls";
-	fprintf(stderr, "p: %s\n", cmd);
+	char ** arg = splitstr(argv, ' ');
+	fprintf(stderr, "p: %s %s\n", cmd, argv);
     return execvp(cmd, arg);
 }
                                     

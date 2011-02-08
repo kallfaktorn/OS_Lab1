@@ -21,7 +21,7 @@ int main(int argc, char** argv)
     {    
         dup2(0, fd[1]);
         close(1);
-        execute("ls", "", subpaths);
+        execute("echo", "echo test", subpaths);
     } 
     else 
     {
