@@ -19,7 +19,7 @@ int run(char ** argv, int background) {
     if(pid == 0) // child
     {    
         dup2(1, fd[1]);
-		close(0);
+		dup2(0, fd[0]);
         execute(argv, subpaths);
     } else {
 	
