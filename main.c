@@ -20,7 +20,7 @@ int main(int argc, char** argv)
     if(fork() == 0) // child
     {    
         dup2(0, fd[1]);
-        close(1);
+		close(1);
         execute("echo", "test", subpaths);
     } 
     else 

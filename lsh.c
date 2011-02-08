@@ -3,6 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "parse.h"
+#include "libsh/libsh.h"
 
 /*
  * Prototypes
@@ -48,10 +49,13 @@ int main(void)
 
 	    if(*line)
 	    {
-		add_history(line);
-		/* execute it */
-		n = parse(line, &cmd);
-		PrintCommand(n, &cmd);
+			add_history(line);
+			
+			/* execute it */
+			n = parse(line, &cmd);
+			PrintCommand(n, &cmd);
+			char ** argv = cmd.pgm->pgmlist;
+			run(argv);
 	    }
 	}
 	
@@ -87,19 +91,19 @@ void
 PrintPgm (Pgm *p)
 {
     if (p == NULL)
-	return;
+		return;
     else
     {
-	char **pl = p->pgmlist;
+		char **pl = p->pgmlist;
 
-	/* The list is in reversed order so print
-         * it reversed so get right :-)
-         */
-	PrintPgm(p->next);
-	printf("    [");
-        while (*pl)
-	    printf("%s ", *pl++);
-	printf("]\n");
+		/* The list is in reversed order so print
+	         * it reversed so get right :-)
+	         */
+		PrintPgm(p->next);
+		printf("    [");
+		while (*pl)
+			printf("%s ", *pl++);
+		printf("]\n");
     }
 }
 
@@ -108,17 +112,16 @@ PrintPgm (Pgm *p)
  *
  * Desc: Strip whitespace from the start and end of STRING.
  */
-void
-stripwhite (char *string)
+void stripwhite (char *string)
 {
     register int i = 0;
     while (whitespace( string[i] ))
-	i++;
+		i++;
     if (i)
-	strcpy (string, string + i);
+		strcpy (string, string + i);
 
     i = strlen( string ) - 1;
     while (i> 0 && whitespace (string[i]))
-	i--;
+		i--;
     string [++i] = '\0';
 }

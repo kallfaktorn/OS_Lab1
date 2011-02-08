@@ -1,25 +1,47 @@
 #include "libsh.h"
 
-int execute(const char* command, const char* args, char** paths)
+int run(char ** argv) {
+	
+	char * path = getenv("PATH");
+
+    char** subpaths;
+    subpaths = splitstr(path, ':');
+
+    int fd[2];
+    pipe(fd);
+    
+    char buf[256];
+    
+    if(fork() == 0) // child
+    {    
+        dup2(0, fd[1]);
+		close(1);
+        execute(argv, subpaths);
+    } 
+    else 
+    {
+        dup2(1, fd[0]);
+        close(0);
+        
+        while(read(fd[0], buf, 256) > 0 ) {
+            printf("OUTPUT: %s", buf);
+        }
+    }
+
+    free2d((void**)subpaths);
+
+	return 1;
+}
+
+int execute(const char** argv, char** paths)
 {
-	char ** arga = splitstr(args, ' ');
-	int argc = array_length((void **)arga);
-	char** argv = calloc(argc + 1, sizeof(char) * (strlen(args) + strlen(command)));
-	
-	int i = 0;
-	strcpy(argv[i], command);
-	for(i = 1; i < ( argc + 1 ); i++) {
-		strcpy(argv[i], arga[i-1]);
-	}
-	
-	free(arga);
-	
+	// try to execute the command
     i = 0;
     int ret = -1;
     while(paths[i])
     {
 		
-        ret = ex_path(command, argv, paths[i]); 
+        ret = ex_path(argv, paths[i]); 
         if (ret == 0)
             break;
         i++;
@@ -30,11 +52,11 @@ int execute(const char* command, const char* args, char** paths)
     return ret;
 }
     
-int ex_path(const char* command, char** argv, const char* path)
+int ex_path(char** argv, const char* path)
 {
     const char* cmd;
     cmd = concat(path, "/");
-    cmd = concat(cmd, command);
+    cmd = concat(cmd, argv[0]);
     return execvp(cmd, argv);
 }
                                     
@@ -113,3 +135,8 @@ int array_length(void ** array) {
 	return i;
 }
                                          
+void debug_array(char ** arr) {
+	int i = 0;
+	while(arr[i])
+		fprintf(stderr, "debug: %s", arr[i++]);
+}
