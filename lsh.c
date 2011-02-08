@@ -3,7 +3,7 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include "parse.h"
-#include "libsh/libsh.h"
+#include "libsh.h"
 
 /*
  * Prototypes

@@ -2,7 +2,7 @@ IDIR= ./libsh
 LDIR= ./libsh
 VPATH= ./libsh
 CC=cc
-CFLAGS= -g -I$(IDIR) -Wall
+CFLAGS= -g -I$(IDIR) -Wall -pedantic
 DEPS= parse.h libsh.h 
 
 OBJ_MAIN= main.o libsh.o 
