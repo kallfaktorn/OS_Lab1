@@ -1,8 +1,8 @@
 IDIR= ./libsh
 LDIR= ./libsh
 VPATH= ./libsh
-CC=gcc
-CFLAGS= -I$(IDIR)
+CC=cc
+CFLAGS= -g -I$(IDIR)
 DEPS= libsh.h
 OBJ= main.o libsh.o 
 
@@ -10,7 +10,7 @@ OBJ= main.o libsh.o
 	$(CC) -c -o $@ $< $(CFLAGS)
 
 main: $(OBJ)
-	gcc -o $@ $^ $(CFLAGS) $(LIBS)
+	cc -o $@ $^ $(CFLAGS) $(LIBS)
 
 clean: 
 	rm -f *.o; rm main
