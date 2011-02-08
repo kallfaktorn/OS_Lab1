@@ -3,10 +3,6 @@
 #include <string.h>
 #include "libsh.h"
 
-
-//Max length of a path.
-#define MAX 100
-
 int execute(const char* command, const char* argv, char** paths)
 {
     int i = 0;
