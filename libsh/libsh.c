@@ -1,13 +1,11 @@
 #include "libsh.h"
 
-int run(char ** argv, int background) {
+void run(Pgm *pgm, int background, int input) {
 	
 	char * path = getenv("PATH");
 
     char** subpaths = splitstr(path, ':');
 
-    int fd[2];
-    pipe(fd);
 	pid_t pid;
 	int status;
 	
@@ -20,18 +18,21 @@ int run(char ** argv, int background) {
     {    
         dup2(1, fd[1]);
 		dup2(0, fd[0]);
-		if(execute(argv, subpaths) == -1) {
+
+		if(pmg->next != NULL) {
+			run(pgm->next, 0);			
+		}
+
+		if(execute(pgm->pgmlist, subpaths) == -1) {
 			fprintf(stderr, "Command not found.\n");
 		}
     } else {
-	
+		
 		if(background != 1)
 			wait(&status);
 		
 		free2d((void**)subpaths);
     }
-
-	return 1;
 }
 
 int execute(char** argv, char** paths)

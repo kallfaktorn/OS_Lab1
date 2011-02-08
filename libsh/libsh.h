@@ -6,7 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 
-int run(char ** argv, int background);
+void run(Pgm *pgm, int background, int input);
 int count(const char* str, char delm);
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
