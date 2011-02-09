@@ -4,6 +4,7 @@
 #include <readline/history.h>
 #include "parse.h"
 #include "libsh.h"
+#include "cd.h"
 
 /*
  * Prototypes
@@ -58,11 +59,13 @@ int main(void)
 			{
 				fprintf(stderr, "Parse error\n");
 			} else {
+
 				if(strcmp(cmd.pgm->pgmlist[0], "exit") == 0) {
 					done = 1;
-				} else {
+				} else if(!execd(&cmd)) {
 				    exec_commands(&cmd);					
 				}
+
 			}
 	    }
 	}

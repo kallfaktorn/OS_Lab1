@@ -3,9 +3,9 @@ LDIR= ./libsh
 VPATH= ./libsh
 CC=gcc
 CFLAGS= -g -I$(IDIR) -Wall
-DEPS= parse.h libsh.h 
+DEPS= parse.h libsh.h cd.h
 
-OBJ_LSH= parse.o lsh.o libsh.o
+OBJ_LSH= parse.o lsh.o libsh.o cd.o
 
 LIBS= -lreadline -lncurses
 BIN= lsh
