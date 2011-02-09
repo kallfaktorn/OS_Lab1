@@ -7,19 +7,14 @@
 #include <unistd.h>
 #include "parse.h"
 
-typedef struct cmd {
-    const char *fullpath;
-    char **argv;
-} Cmd;
-
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
 char* concat(const char* str1, const char* str2);
-int execute(char** argv, char** paths);
 int array_length(void ** array);
 const char* valid_path(char* command, char** subpaths);
-void exec_commands(Pgm* pgm, int background);
-int array_length3(void *** array);
+void exec_commands(Command *cmd);
 int validate(Pgm* pgm, char **subpaths);
+void read_from_pipe (int file);
+void write_to_pipe (int file, char *from_filename);
 
 #endif

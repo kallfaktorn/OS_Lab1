@@ -58,8 +58,11 @@ int main(void)
 			{
 				fprintf(stderr, "Parse error\n");
 			} else {
-
-			    exec_commands(cmd.pgm, cmd.bakground);
+				if(strcmp(cmd.pgm->pgmlist[0], "exit") == 0) {
+					done = 1;
+				} else {
+				    exec_commands(&cmd);					
+				}
 			}
 	    }
 	}

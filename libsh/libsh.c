@@ -44,13 +44,23 @@ void run(Pgm* pgm, int* fd, char **subpaths)
 }
 
 
-void exec_commands(Pgm* pgm, int background)
+void exec_commands(Command *cmd)
 {
+
     char* path = getenv("PATH");
     char** subpaths = splitstr(path, ':');
 
-
-	if(validate(pgm, subpaths) == 1) {
+	if(validate(cmd->pgm, subpaths) == 1) {
+		/*
+		if(cmd->rstdout != NULL) {
+			int fdr[2];
+			pipe(fdr);
+		}
+		*/
+		int fdw[2];
+		if(cmd->rstdin != NULL) {
+			pipe(fdw);
+		}
 		
 		pid_t pid;
 		int status;
@@ -62,11 +72,17 @@ void exec_commands(Pgm* pgm, int background)
 
 		if(pid == 0) // child
 	    {   
-			run(pgm, NULL, subpaths);
+			if(cmd->rstdin != NULL) {
+				read_from_pipe (fdw[0]);				
+			}
+			run(cmd->pgm, NULL, subpaths);
 	    }
 	    else 
 	    {	
-			if(background != 1)
+			if(cmd->rstdin != NULL) {
+				write_to_pipe (fdw[1], cmd->rstdin);
+			}
+			if(cmd->bakground != 1)
 				wait(&status);
 
 			free2d((void**)subpaths);
@@ -80,9 +96,8 @@ void exec_commands(Pgm* pgm, int background)
 
 int validate(Pgm* pgm, char **subpaths) {
 	Pgm *p = pgm;
-	const char * fullpath;
 	do {
-		if((fullpath = valid_path(p->pgmlist[0], subpaths)) == NULL) {
+		if(valid_path(p->pgmlist[0], subpaths) == NULL) {
 			return 0;
 		}
 	} while((p = p->next) != NULL);
@@ -178,4 +193,32 @@ int free2d(void ** src)
     free(src);
 
     return 0;
+}
+
+void read_from_pipe (int file)
+{
+	FILE *stream;
+	int c;
+	stream = fdopen (file, "r");
+	while ((c = fgetc (stream)) != EOF)
+		putchar (c);
+	fclose (stream);
+}
+
+/* Write some random text to the pipe.  */
+
+void write_to_pipe (int file, char *from_filename)
+{
+	char ch;
+	
+	FILE *stream;
+	stream = fdopen (file, "w");
+
+	FILE *from_stream = fopen(from_filename, "r");
+	
+	while((ch = fgetc ( from_stream )) != EOF)
+		fprintf(stream, "%c", ch);
+
+	fclose (stream);
+	fclose(from_stream);
 }
