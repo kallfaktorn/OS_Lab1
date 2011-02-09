@@ -1,7 +1,7 @@
 #include "libsh.h"
 #include <sys/stat.h>
 
-void run(Pgm* pgm, int* fd, char **subpaths)
+void run(Pgm* pgm, char **subpaths)
 {
     if(pgm->next == NULL)
     {
@@ -15,21 +15,21 @@ void run(Pgm* pgm, int* fd, char **subpaths)
     }
     else
     {
-        int new_fd[2];
+        int fd[2];
         int pid;
         
-        pipe(new_fd);
+        pipe(fd);
         pid = fork();
         if(pid == 0)
         {
-            dup2(new_fd[1], STDOUT_FILENO);
-            close(new_fd[0]);
-            run(pgm->next, new_fd, subpaths);
+            dup2(fd[1], STDOUT_FILENO);
+            close(fd[0]);
+            run(pgm->next, subpaths);
         }
         else if(pid > 0)
         {
-            dup2(new_fd[0], STDIN_FILENO);
-            close(new_fd[1]);
+            dup2(fd[0], STDIN_FILENO);
+            close(fd[1]);
 			const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
 			free2d((void**)subpaths);
 			
@@ -51,12 +51,8 @@ void exec_commands(Command *cmd)
     char** subpaths = splitstr(path, ':');
 
 	if(validate(cmd->pgm, subpaths) == 1) {
-		/*
-		if(cmd->rstdout != NULL) {
-			int fdr[2];
-			pipe(fdr);
-		}
-		*/
+		
+		// <
 		int fdw[2];
 		if(cmd->rstdin != NULL) {
 			pipe(fdw);
@@ -72,16 +68,24 @@ void exec_commands(Command *cmd)
 
 		if(pid == 0) // child
 	    {   
+			// <
 			if(cmd->rstdin != NULL) {
+				dup2(fdw[0], STDIN_FILENO);
 				read_from_pipe (fdw[0]);				
 			}
-			run(cmd->pgm, NULL, subpaths);
+			
+			run(cmd->pgm, subpaths);
 	    }
 	    else 
 	    {	
+			// <
 			if(cmd->rstdin != NULL) {
+				dup2(fdw[1], STDOUT_FILENO);
+				close(fdw[0]);
 				write_to_pipe (fdw[1], cmd->rstdin);
+
 			}
+
 			if(cmd->bakground != 1)
 				wait(&status);
 
@@ -201,7 +205,7 @@ void read_from_pipe (int file)
 	int c;
 	stream = fdopen (file, "r");
 	while ((c = fgetc (stream)) != EOF)
-		putchar (c);
+		fprintf(stdin, "%c", c);
 	fclose (stream);
 }
 
@@ -217,7 +221,10 @@ void write_to_pipe (int file, char *from_filename)
 	FILE *from_stream = fopen(from_filename, "r");
 	
 	while((ch = fgetc ( from_stream )) != EOF)
-		fprintf(stream, "%c", ch);
+		if(ch) {
+			fprintf(stderr, "c: %c\n", ch);
+			fprintf(stream, "%c", ch);			
+		}
 
 	fclose (stream);
 	fclose(from_stream);
