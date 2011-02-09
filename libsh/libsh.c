@@ -1,4 +1,5 @@
 #include "libsh.h"
+#include <sys/stat.h>
 
 /*void run(Pgm *pgm, int background, int input) {
 	
@@ -124,12 +125,12 @@ const char* valid_path(char* command, char** subpaths)
     {
         fullpath = concat(subpaths[i], "/");
         fullpath = concat(fullpath, command);
-        fp = fopen(fullpath, "r");
-        if(fp != NULL) 
-        {
-            fclose(fp);
-            return fullpath;
-        }
+		
+		struct stat buf;
+		stat (fullpath, &buf);
+		if (buf.st_mode & S_IXUSR) {
+			return fullpath;
+		}
     }
     return NULL;
 }
