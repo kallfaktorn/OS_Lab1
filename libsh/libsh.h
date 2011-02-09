@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include "parse.h"
 
+typedef struct cmd {
+    const char *fullpath;
+    char **argv;
+} Cmd;
+
 int count(const char* str, char delm);
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
