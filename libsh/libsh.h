@@ -22,8 +22,7 @@ int array_length(void ** array);
 void debug_array(char ** arr);
 const char* valid_path(char* command, char** subpaths);
 void exec_commands(Pgm* pgm);
-char*** tail(char*** array);
 int array_length3(void *** array);
-int count_pgm(Pgm* pgm);
+int validate(Pgm* pgm, char **subpaths);
 
 #endif
