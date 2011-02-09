@@ -45,7 +45,7 @@ void run(Pgm* pgm, int* fd, char **subpaths)
 }
 
 
-void exec_commands(Pgm* pgm)
+void exec_commands(Pgm* pgm, int background)
 {
     char* path = getenv("PATH");
     char** subpaths = splitstr(path, ':');
@@ -54,7 +54,6 @@ void exec_commands(Pgm* pgm)
 		
 		pid_t pid;
 		int status;
-		int background = 0;
 
 		if ((pid = fork()) == -1) {
 			perror("fork error");
@@ -73,6 +72,9 @@ void exec_commands(Pgm* pgm)
 			free2d((void**)subpaths);
 	    }
 		
+	} else {
+		printf("Command not found");
+		free2d((void**)subpaths);		
 	}
 }
 
