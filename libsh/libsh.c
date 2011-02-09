@@ -100,8 +100,8 @@ const char*** exec_commands(Pgm* pgm)
         char** args = p->pgmlist;
         const char* fullpath = valid_path(p->pgmlist[0], subpaths);
         if(fullpath == NULL) return NULL;
-        commands[i][0] = fullpath;
-        commands[i][1] = p->pgmlist;
+        p->pgmlist[0] = fullpath;
+        commands[i] = p->pgmlist;
         p = p->next;
     }
 
