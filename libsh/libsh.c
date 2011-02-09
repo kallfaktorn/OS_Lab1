@@ -52,12 +52,6 @@ void exec_commands(Command *cmd)
 
 	if(validate(cmd->pgm, subpaths) == 1) {
 		
-		// <
-		int fdw[2];
-		if(cmd->rstdin != NULL) {
-			pipe(fdw);
-		}
-		
 		pid_t pid;
 		int status;
 
@@ -70,22 +64,15 @@ void exec_commands(Command *cmd)
 	    {   
 			// <
 			if(cmd->rstdin != NULL) {
-				dup2(fdw[0], STDIN_FILENO);
-				read_from_pipe (fdw[0]);				
+				freopen(cmd->rstdin, "r", stdin);
 			}
-			
+			if(cmd->rstdout != NULL) {
+				freopen(cmd->rstdout, "w", stdout);
+			}
 			run(cmd->pgm, subpaths);
 	    }
 	    else 
 	    {	
-			// <
-			if(cmd->rstdin != NULL) {
-				dup2(fdw[1], STDOUT_FILENO);
-				close(fdw[0]);
-				write_to_pipe (fdw[1], cmd->rstdin);
-
-			}
-
 			if(cmd->bakground != 1)
 				wait(&status);
 
@@ -197,35 +184,4 @@ int free2d(void ** src)
     free(src);
 
     return 0;
-}
-
-void read_from_pipe (int file)
-{
-	FILE *stream;
-	int c;
-	stream = fdopen (file, "r");
-	while ((c = fgetc (stream)) != EOF)
-		fprintf(stdin, "%c", c);
-	fclose (stream);
-}
-
-/* Write some random text to the pipe.  */
-
-void write_to_pipe (int file, char *from_filename)
-{
-	char ch;
-	
-	FILE *stream;
-	stream = fdopen (file, "w");
-
-	FILE *from_stream = fopen(from_filename, "r");
-	
-	while((ch = fgetc ( from_stream )) != EOF)
-		if(ch) {
-			fprintf(stderr, "c: %c\n", ch);
-			fprintf(stream, "%c", ch);			
-		}
-
-	fclose (stream);
-	fclose(from_stream);
 }

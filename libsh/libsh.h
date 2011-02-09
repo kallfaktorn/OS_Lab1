@@ -14,8 +14,6 @@ int array_length(void ** array);
 const char* valid_path(char* command, char** subpaths);
 void exec_commands(Command *cmd);
 int validate(Pgm* pgm, char **subpaths);
-void read_from_pipe (int file);
-void write_to_pipe (int file, char *from_filename);
 void run(Pgm* pgm, char **subpaths);
 
 #endif
