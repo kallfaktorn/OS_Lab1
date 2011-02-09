@@ -73,7 +73,7 @@ void exec_commands(Pgm* pgm, int background)
 	    }
 		
 	} else {
-		printf("Command not found");
+		printf("Command not found\n");
 		free2d((void**)subpaths);		
 	}
 }
@@ -95,7 +95,7 @@ const char* valid_path(char* command, char** subpaths)
     int i = 0;
     char* fullpath = NULL;
     
-    while(subpaths[i++])
+    while(subpaths[i])
     {
         fullpath = concat(subpaths[i], "/");
         fullpath = concat(fullpath, command);
@@ -106,6 +106,7 @@ const char* valid_path(char* command, char** subpaths)
 		if (ret != -1 && buf.st_mode & S_IXUSR) {
 			return fullpath;
 		}
+		i++;
     }
     return NULL;
 }
