@@ -1,5 +1,5 @@
 #include "libsh.h"
-#include <sys/stat.h>
+
 
 void run(Pgm* pgm, int* fd, char **subpaths)
 {
@@ -62,10 +62,15 @@ void exec_commands(Pgm* pgm, int background)
 
 		if(pid == 0) // child
 	    {   
+	        CHILDPID = getpid();
+	        printf("%iChild\n", getpid());
 			run(pgm, NULL, subpaths);
 	    }
 	    else 
 	    {	
+	        printf("%i\n", getpid());
+	        //printf("%i\n", pid);
+	        //printf("%i\n", CHILDPID);
 			if(background != 1)
 				wait(&status);
 

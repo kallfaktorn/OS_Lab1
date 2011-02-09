@@ -1,11 +1,13 @@
 #ifndef LIBSH_H
 #define LIBSH_H
 
+#include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "parse.h"
+#include "sig.h"
 
 typedef struct cmd {
     const char *fullpath;

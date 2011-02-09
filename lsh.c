@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "libsh.h"
 #include "cd.h"
-
+#include "sig.h"
 /*
  * Prototypes
  */
@@ -27,6 +27,7 @@ int main(void)
 {
     Command cmd;
     int n;
+    sig_init();
 
     while (! done) {
 
