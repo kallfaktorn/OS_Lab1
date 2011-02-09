@@ -118,6 +118,8 @@ const char* valid_path(char* command, char** subpaths)
     FILE* fp = NULL;
     int i = 0;
     char* fullpath = NULL;
+    
+    printf("%i\n", array_length((void **)subpaths));
     while(subpaths[i])
     {
         fullpath = concat(subpaths[i], "/");
@@ -128,7 +130,6 @@ const char* valid_path(char* command, char** subpaths)
             fclose(fp);
             return fullpath;
         }
-        fclose(fp);
     }
     return NULL;
 }
@@ -184,11 +185,11 @@ char** splitstr(const char* str, char delm)
 {
     char c;
     size_t maxlen = strlen(str);
-    char** retarr = calloc(count(str, ':')+1, sizeof(char) * maxlen);
+    char** retarr = calloc(count(str, ':')+2, sizeof(char) * maxlen);
     char* substr = calloc(maxlen, sizeof(char));
     int i = 0;
     int j = 0;
-
+    int k = 0;
     while((c = *(str++)) != '\0')
     {
         if(c == delm)
@@ -204,10 +205,12 @@ char** splitstr(const char* str, char delm)
         {
             substr[j] = c;
             j++;
-        }
+        }        
+        k++;
     }
-    free(substr);
     
+    retarr[k-1] = NULL;
+    free(substr);
     return retarr;
 }
 
