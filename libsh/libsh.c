@@ -82,7 +82,7 @@ void run(char **commands[], int* fd)
 }
 
 
-const char*** exec_commands(Pgm* pgm)
+void exec_commands(Pgm* pgm)
 {
     char* path = getenv("PATH");
     char** subpaths = splitstr(path, ':');
@@ -98,7 +98,7 @@ const char*** exec_commands(Pgm* pgm)
     for(i=0; i < size; i++)
     {
         const char* fullpath = valid_path(p->pgmlist[0], subpaths);
-        if(fullpath == NULL) return NULL;
+        if(fullpath == NULL) return;
         strcpy(p->pgmlist[0], fullpath);
         commands[i] = p->pgmlist;
         p = p->next;
@@ -241,12 +241,12 @@ void debug_array(char ** arr) {
 
 char*** tail(char*** array)
 {
-    int new_length = array_length((void ***)array)-1;
+    int new_length = array_length3((void ***)array)-1;
     int cmdelements = 3;
     int stringlength = 100;
     char *** ret = calloc(new_length, sizeof(char) * cmdelements * stringlength);
-    int i = 0;
-    for(i; i < new_length; i++)
+    int i;
+    for(i=0; i < new_length; i++)
     {
         ret[i] = array[i+1];
     }
