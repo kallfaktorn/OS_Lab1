@@ -91,9 +91,28 @@ void exec_commands(Pgm* pgm)
     char** subpaths = splitstr(path, ':');
 
 	if(validate(pgm, subpaths) == 1) {
-		fprintf(stderr, "%s", "test");
 		
-		run(pgm, NULL, subpaths);
+		pid_t pid;
+		int status;
+		int background = 0;
+
+		if ((pid = fork()) == -1) {
+			perror("fork error");
+			exit(EXIT_FAILURE);
+		}
+
+		if(pid == 0) // child
+	    {   
+			run(pgm, NULL, subpaths);
+	    }
+	    else 
+	    {	
+			if(background != 1)
+				wait(&status);
+
+			free2d((void**)subpaths);
+	    }
+		
 	}
 }
 
@@ -129,31 +148,6 @@ const char* valid_path(char* command, char** subpaths)
     return NULL;
 }
         
-
-int execute(char** argv, char** paths)
-{
-	// try to execute the command
-    int i = 0;
-    int ret = -1;
-    while(paths[i])
-    {
-        ret = ex_path(argv, paths[i]); 
-        if (ret == 0)
-            break;
-        i++;
-    }
-
-    return ret;
-}
-    
-int ex_path(char** argv, char* path)
-{
-    const char* cmd;
-    cmd = concat(path, "/");
-    cmd = concat(cmd, argv[0]);
-    return execvp(cmd, argv);
-}
-                                    
 int count(const char* str, char delm)
 {
     int i = 0;
@@ -222,26 +216,3 @@ int free2d(void ** src)
 
     return 0;
 }
-
-int array_length(void ** array) {
-	int i = 0;
-	while(array[i])
-		i++;
-		
-	return i;
-}
-                                         
-void debug_array(char ** arr) {
-	int i = 0;
-	while(arr[i])
-		fprintf(stderr, "debug: %s", arr[i++]);
-}
-
-int array_length3(void *** array) {
-	int i = 0;
-	while(array[i])
-		i++;
-		
-	return i;
-}
-

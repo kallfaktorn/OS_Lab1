@@ -12,14 +12,11 @@ typedef struct cmd {
     char **argv;
 } Cmd;
 
-int count(const char* str, char delm);
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
 char* concat(const char* str1, const char* str2);
-int ex_path(char** argv, char* path);
 int execute(char** argv, char** paths);
 int array_length(void ** array);
-void debug_array(char ** arr);
 const char* valid_path(char* command, char** subpaths);
 void exec_commands(Pgm* pgm);
 int array_length3(void *** array);
