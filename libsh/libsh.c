@@ -5,7 +5,10 @@ void run(Pgm* pgm, int* fd, char **subpaths)
 {
     if(pgm->next == NULL)
     {
-        if (execvp(valid_path(pgm->pgmlist[0], subpaths), pgm->pgmlist) < 0) {     /* execute the command  */
+		const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
+		free2d((void**)subpaths);
+		
+        if (execvp(fullpath, pgm->pgmlist) < 0) {     /* execute the command  */
              printf("*** ERROR: exec failed1 %s\n", pgm->pgmlist[0]);
              exit(1);
         }
@@ -27,7 +30,11 @@ void run(Pgm* pgm, int* fd, char **subpaths)
         {
             dup2(new_fd[0], STDIN_FILENO);
             close(new_fd[1]);
-	        if (execvp(valid_path(pgm->pgmlist[0], subpaths), pgm->pgmlist) < 0) {     /* execute the command  */
+
+			const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
+			free2d((void**)subpaths);
+			
+	        if (execvp(fullpath, pgm->pgmlist) < 0) {     /* execute the command  */
 	             printf("*** ERROR: exec failed: %s\n", pgm->pgmlist[0]);
 	             exit(1);
 	        }
