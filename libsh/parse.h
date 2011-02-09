@@ -1,3 +1,6 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 typedef struct c {
     char **pgmlist;
     struct c *next;
@@ -18,4 +21,4 @@ extern int acmd( char *, Pgm **);
 extern int isidentifier( char * );
 
 
-
+#endif

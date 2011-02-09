@@ -58,11 +58,8 @@ int main(void)
 			{
 				fprintf(stderr, "Parse error\n");
 			} else {
-				int fd[2];
-			    pipe(fd);
-			    dup2(0, fd[0]);
-				
-				run(cmd.pgm, cmd.bakground);
+			    exec_commands(cmd.pgm);
+				//run(cmd.pgm, cmd.bakground, 1/*stdout*/);
 			}
 	    }
 	}

@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "parse.h"
 
-void run(Pgm *pgm, int background, int input);
 int count(const char* str, char delm);
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
@@ -15,5 +15,10 @@ int ex_path(char** argv, char* path);
 int execute(char** argv, char** paths);
 int array_length(void ** array);
 void debug_array(char ** arr);
+const char* valid_path(char* command, char** subpaths);
+const char*** exec_commands(Pgm* pgm);
+char*** tail(char*** array);
+int array_length3(void *** array);
+int count_pgm(Pgm* pgm);
 
 #endif
