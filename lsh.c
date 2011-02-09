@@ -58,9 +58,8 @@ int main(void)
 			{
 				fprintf(stderr, "Parse error\n");
 			} else {
-			    exec_commands(cmd.pgm);
-			  
-				//run(cmd.pgm, cmd.bakground, 1/*stdout*/);
+
+			    exec_commands(cmd.pgm, cmd.bakground);
 			}
 	    }
 	}
