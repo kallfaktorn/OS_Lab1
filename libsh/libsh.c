@@ -15,9 +15,6 @@
 		exit(EXIT_FAILURE);
 	}
 
-    const char* fullpath = valid_path(pgm->pgmlist[0], subpaths);
-
-    execvp(fullpath, pgm->pgmlist);
 
     if(fullpath != NULL)
     {
@@ -89,23 +86,58 @@ void exec_commands(Pgm* pgm)
     char** subpaths = splitstr(path, ':');
 
     int size = count_pgm(pgm);
-    int cmdelements = 3;
+    //fprintf(stderr, "%i\n", count_pgm(pgm));
+    int cmdelements = 20;
     int stringlength = 100;
-    
-    char *** commands = calloc(size, sizeof(char) * cmdelements * stringlength);
-    Pgm* p = pgm;
-
     int i;
+    char *** commands = calloc(size, sizeof(char) * cmdelements * stringlength);
     for(i=0; i < size; i++)
     {
-        const char* fullpath = valid_path(p->pgmlist[0], subpaths);
+        commands[i] = calloc(cmdelements,sizeof(char) * stringlength);
+        int j;
+        for(j=0; j < cmdelements; j++)
+        {
+            commands[i][j] = calloc(stringlength, sizeof(char));
+        }
+    }
+    Pgm* p = pgm;
+    
+    for(i=0; i < size; i++)
+    {
+        char* fullpath = valid_path(p->pgmlist[0], subpaths);
         if(fullpath == NULL) return;
         strcpy(p->pgmlist[0], fullpath);
+        fprintf(stderr, "%s\n", p->pgmlist[0]);
         commands[i] = p->pgmlist;
         p = p->next;
     }
 
-    run(commands, NULL);
+    i=0;
+    while(commands[i])
+    {
+        fprintf(stderr, "%s\n", commands[i][0]);
+        i++;
+    }
+    pid_t pid;
+	int status;
+	int background = 0;
+	
+	if ((pid = fork()) == -1) {
+		perror("fork error");
+		exit(EXIT_FAILURE);
+	}
+	
+	if(pid == 0) // child
+    {   
+        run(commands, NULL);
+    }
+    else 
+    {	
+		if(background != 1)
+			wait(&status);
+		
+		free2d((void**)subpaths);
+    }
 }
     
 int count_pgm(Pgm* pgm)
@@ -120,8 +152,7 @@ const char* valid_path(char* command, char** subpaths)
     int i = 0;
     char* fullpath = NULL;
     
-    printf("%i\n", array_length((void **)subpaths));
-    while(subpaths[i])
+    while(subpaths[i++])
     {
         fullpath = concat(subpaths[i], "/");
         fullpath = concat(fullpath, command);
