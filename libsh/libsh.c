@@ -1,53 +1,6 @@
 #include "libsh.h"
 #include <sys/stat.h>
 
-/*void run(Pgm *pgm, int background, int input) {
-	
-	char * path = getenv("PATH");
-
-    char** subpaths = splitstr(path, ':');
-
-	pid_t pid;
-	int status;
-	
-	if ((pid = fork()) == -1) {
-		perror("fork error");
-		exit(EXIT_FAILURE);
-	}
-
-    const char* fullpath = valid_path(pgm->pgmlist[0], subpaths);
-
-    execvp(fullpath, pgm->pgmlist);
-
-    if(fullpath != NULL)
-    {
-    }
-    
-    if(pid == 0) // child
-    {    
-
-		if(pgm->next != NULL) {
-            int fd[2];
-            pipe(fd);
-            dup2(fd[0], input);
-            //dup2(fd[1], Ifd[1]);
-
-			run(pgm->next, 0, fd[1]);			
-		}
-
-		if(execute(pgm->pgmlist, subpaths) == -1) {
-			fprintf(stderr, "Command not found.\n");
-		}
-    } else {
-		
-		if(background != 1)
-			wait(&status);
-		
-		free2d((void**)subpaths);
-    }
-}
-*/
-
 void run(Pgm* pgm, int* fd, char **subpaths)
 {
     if(pgm->next == NULL)
