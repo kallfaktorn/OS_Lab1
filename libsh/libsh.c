@@ -97,10 +97,9 @@ const char*** exec_commands(Pgm* pgm)
     int i;
     for(i=0; i < size; i++)
     {
-        char** args = p->pgmlist;
         const char* fullpath = valid_path(p->pgmlist[0], subpaths);
         if(fullpath == NULL) return NULL;
-        p->pgmlist[0] = fullpath;
+        strcpy(p->pgmlist[0], fullpath);
         commands[i] = p->pgmlist;
         p = p->next;
     }
@@ -117,14 +116,18 @@ int count_pgm(Pgm* pgm)
 const char* valid_path(char* command, char** subpaths)
 {
     FILE* fp = NULL;
-    ret = NULL;
     int i = 0;
+    char* fullpath = NULL;
     while(subpaths[i])
     {
         fullpath = concat(subpaths[i], "/");
         fullpath = concat(fullpath, command);
-        fp = fopen(fullpath);
-        if(fp != NULL) fclose(fp), return fullpath;
+        fp = fopen(fullpath, "r");
+        if(fp != NULL) 
+        {
+            fclose(fp);
+            return fullpath;
+        }
         fclose(fp);
     }
     return NULL;
