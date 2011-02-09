@@ -45,14 +45,17 @@
 }
 */
 
-void run(char **commands[], int* fd)
+void run(Cmd *commands, int* fd)
 {
-    char** command = commands[0];
-    char*** rest = tail(commands);
+    Cmd command = commands[0];
+    Cmd * rest = tail(commands);
     
     if(array_length3((void ***)rest) == 0)
     {
-        execvp(command[0], command);
+        if (execvp(command.fullpath, command.argv) < 0) {     /* execute the command  */
+             printf("*** ERROR: exec failed1 %s\n", command.fullpath);
+             exit(1);
+        }
     }
     else if(array_length3((void ***)rest) > 0)
     {
@@ -63,7 +66,6 @@ void run(char **commands[], int* fd)
         pid = fork();
         if(pid == 0)
         {
-            
             dup2(new_fd[1], STDOUT_FILENO);
             close(new_fd[0]);
             run(rest, new_fd);
@@ -72,7 +74,10 @@ void run(char **commands[], int* fd)
         {
             dup2(new_fd[0], STDIN_FILENO);
             close(new_fd[1]);
-            execvp(command[0], command);
+	        if (execvp(command.fullpath, command.argv) < 0) {     /* execute the command  */
+	             printf("*** ERROR: exec failed: %s\n", command.fullpath);
+	             exit(1);
+	        }
         }
     }
     
@@ -85,37 +90,30 @@ void exec_commands(Pgm* pgm)
     char* path = getenv("PATH");
     char** subpaths = splitstr(path, ':');
 
-    int size = count_pgm(pgm);
+    int size = count_pgm(pgm);// add '\0'
     //fprintf(stderr, "%i\n", count_pgm(pgm));
     int cmdelements = 20;
     int stringlength = 100;
-    int i;
-    char *** commands = calloc(size, sizeof(char) * cmdelements * stringlength);
-    for(i=0; i < size; i++)
-    {
-        commands[i] = calloc(cmdelements,sizeof(char) * stringlength);
-        int j;
-        for(j=0; j < cmdelements; j++)
-        {
-            commands[i][j] = calloc(stringlength, sizeof(char));
-        }
-    }
-    Pgm* p = pgm;
     
-    for(i=0; i < size; i++)
+    Cmd * commands = calloc(size, sizeof(char) * cmdelements * stringlength);
+    Pgm* p = pgm;
+    int i;
+    for(i=0; i < size; i++) 
     {
-        char* fullpath = valid_path(p->pgmlist[0], subpaths);
-        if(fullpath == NULL) return;
-        strcpy(p->pgmlist[0], fullpath);
-        fprintf(stderr, "%s\n", p->pgmlist[0]);
-        commands[i] = p->pgmlist;
+        const char* fullpath = valid_path(p->pgmlist[0], subpaths);
+        //commands[i] = p->pgmlist;
+		Cmd command;
+		command.fullpath = fullpath;
+		command.argv = p->pgmlist;
+        commands[i] = command;
         p = p->next;
     }
+    //commands[i] = NULL;
 
     i=0;
-    while(commands[i])
+    while(commands[i].fullpath)
     {
-        fprintf(stderr, "%s\n", commands[i][0]);
+        fprintf(stderr, "%s\n", commands[i].fullpath);
         i++;
     }
     pid_t pid;
@@ -148,7 +146,6 @@ int count_pgm(Pgm* pgm)
 
 const char* valid_path(char* command, char** subpaths)
 {
-    FILE* fp = NULL;
     int i = 0;
     char* fullpath = NULL;
     
@@ -158,8 +155,9 @@ const char* valid_path(char* command, char** subpaths)
         fullpath = concat(fullpath, command);
 		
 		struct stat buf;
-		stat (fullpath, &buf);
-		if (buf.st_mode & S_IXUSR) {
+		int ret = stat (fullpath, &buf);
+		
+		if (ret != -1 && buf.st_mode & S_IXUSR) {
 			return fullpath;
 		}
     }
@@ -274,12 +272,12 @@ void debug_array(char ** arr) {
 		fprintf(stderr, "debug: %s", arr[i++]);
 }
 
-char*** tail(char*** array)
+Cmd * tail(Cmd * array)
 {
     int new_length = array_length3((void ***)array)-1;
-    int cmdelements = 3;
-    int stringlength = 100;
-    char *** ret = calloc(new_length, sizeof(char) * cmdelements * stringlength);
+   // int cmdelements = 3;
+    //int stringlength = 100;
+    Cmd * ret = calloc(new_length, sizeof(char) * 3000);
     int i;
     for(i=0; i < new_length; i++)
     {

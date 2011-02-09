@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include "parse.h"
 
+typedef struct cmd {
+    const char *fullpath;
+    char **argv;
+} Cmd;
+
 int count(const char* str, char delm);
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
@@ -17,7 +22,7 @@ int array_length(void ** array);
 void debug_array(char ** arr);
 const char* valid_path(char* command, char** subpaths);
 void exec_commands(Pgm* pgm);
-char*** tail(char*** array);
+Cmd* tail(Cmd* array);
 int array_length3(void *** array);
 int count_pgm(Pgm* pgm);
 
