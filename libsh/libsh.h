@@ -19,5 +19,6 @@ int validate(Pgm* pgm, char **subpaths);
 void run(Pgm* pgm, char **subpaths);
 
 void leave(int sig);
+void childHandler(int sig);
 
 #endif

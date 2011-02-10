@@ -74,7 +74,8 @@ void exec_commands(Command *cmd)
     {	
 			background = cmd->bakground;
 			if(cmd->bakground != 1) {
-				wait(pid);
+				int status;
+				waitpid(pid, &status, 0);
 			} else {
 				printf("[%i]\n", pid);
 			}
@@ -191,8 +192,13 @@ int free2d(void ** src)
 }
 
 void leave(int sig) {
-	if(background == 0 && pid > 0) {
+	if(sig != SIGCHLD && background == 0 && pid > 0) {
 		kill(pid, sig);
 		pid = -1;
 	}
+}
+
+void childHandler(int sig) {
+	int status;
+	wait(&status);
 }

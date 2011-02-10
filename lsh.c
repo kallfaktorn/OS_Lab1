@@ -28,7 +28,7 @@ int main(void)
     Command cmd;
     int n;
 		signal(SIGINT, leave);
-		signal(SIGCHLD, SIG_IGN);
+		signal(SIGCHLD, childHandler);
 
     while (! done) {
 
