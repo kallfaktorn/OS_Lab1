@@ -1,7 +1,8 @@
 #include "libsh.h"
 
 
-pid_t pid;
+pid_t pid = -1;
+int background = -1;
 
 void run(Pgm* pgm, char **subpaths)
 {
@@ -21,7 +22,7 @@ void run(Pgm* pgm, char **subpaths)
         pid_t pid2;
         
         pipe(fd);
-        pid = fork();
+        pid2 = fork();
         if(pid2 == 0)
         {
             dup2(fd[1], STDOUT_FILENO);
@@ -54,17 +55,13 @@ void exec_commands(Command *cmd)
 
 	if(validate(cmd->pgm, subpaths) == 1) {
 		
-		// pid_t pid;
-		int status;
-
 		if ((pid = fork()) == -1) {
 			perror("fork error");
 			exit(EXIT_FAILURE);
 		}
 
 		if(pid == 0) // child
-    {   
-			// <
+    {
 			if(cmd->rstdin != NULL) {
 				freopen(cmd->rstdin, "r", stdin);
 			}
@@ -75,9 +72,14 @@ void exec_commands(Command *cmd)
     }
     else 
     {	
-			if(cmd->bakground != 1)
-				wait(&status);
+			background = cmd->bakground;
+			if(cmd->bakground != 1) {
+				wait(pid);
+			} else {
+				printf("[%i]\n", pid);
+			}
 
+			pid = -1;
 			free2d((void**)subpaths);
     }
 		
@@ -189,5 +191,8 @@ int free2d(void ** src)
 }
 
 void leave(int sig) {
-	kill(pid, sig);
+	if(background == 0 && pid > 0) {
+		kill(pid, sig);
+		pid = -1;
+	}
 }

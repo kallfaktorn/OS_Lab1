@@ -28,6 +28,7 @@ int main(void)
     Command cmd;
     int n;
 		signal(SIGINT, leave);
+		signal(SIGCHLD, SIG_IGN);
 
     while (! done) {
 
@@ -55,7 +56,7 @@ int main(void)
 			
 			/* execute it */
 			n = parse(line, &cmd);
-			// PrintCommand(n, &cmd);
+			//PrintCommand(n, &cmd);
 			
 			if(n < 0)
 			{
@@ -74,8 +75,8 @@ int main(void)
 	
 	if(line)
 	    free(line);
-    }
-    return 0;
+  }
+  return 0;
 }
 
 /*
