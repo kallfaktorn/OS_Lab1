@@ -27,7 +27,7 @@ int main(void)
 {
     Command cmd;
     int n;
-    sig_init();
+		signal(SIGINT, leave);
 
     while (! done) {
 
@@ -55,19 +55,19 @@ int main(void)
 			
 			/* execute it */
 			n = parse(line, &cmd);
-			PrintCommand(n, &cmd);
+			// PrintCommand(n, &cmd);
+			
 			if(n < 0)
 			{
 				fprintf(stderr, "Parse error\n");
 			} else {
-                
-                
-                if (execd(&cmd));
-                
-                else
-                {
-			        exec_commands(cmd.pgm, cmd.bakground);
-			    }
+
+				if(strcmp(cmd.pgm->pgmlist[0], "exit") == 0) {
+					done = 1;
+				} else if(!execd(&cmd)) {
+				    exec_commands(&cmd);					
+				}
+
 			}
 	    }
 	}

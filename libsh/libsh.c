@@ -1,7 +1,9 @@
 #include "libsh.h"
 
 
-void run(Pgm* pgm, int* fd, char **subpaths)
+pid_t pid;
+
+void run(Pgm* pgm, char **subpaths)
 {
     if(pgm->next == NULL)
     {
@@ -15,23 +17,23 @@ void run(Pgm* pgm, int* fd, char **subpaths)
     }
     else
     {
-        int new_fd[2];
-        int pid;
+        int fd[2];
+        pid_t pid2;
         
-        pipe(new_fd);
+        pipe(fd);
         pid = fork();
-        if(pid == 0)
+        if(pid2 == 0)
         {
-            dup2(new_fd[1], STDOUT_FILENO);
-            close(new_fd[0]);
-            run(pgm->next, new_fd, subpaths);
+            dup2(fd[1], STDOUT_FILENO);
+            close(fd[0]);
+            run(pgm->next, subpaths);
         }
-        else if(pid > 0)
+        else if(pid2 > 0)
         {
-            dup2(new_fd[0], STDIN_FILENO);
-            close(new_fd[1]);
-			const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
-			free2d((void**)subpaths);
+            dup2(fd[0], STDIN_FILENO);
+            close(fd[1]);
+						const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
+						free2d((void**)subpaths);
 			
 	        if (execvp(fullpath, pgm->pgmlist) < 0) {     /* execute the command  */
 	             printf("*** ERROR: exec failed: %s\n", pgm->pgmlist[0]);
@@ -44,15 +46,15 @@ void run(Pgm* pgm, int* fd, char **subpaths)
 }
 
 
-void exec_commands(Pgm* pgm, int background)
+void exec_commands(Command *cmd)
 {
+
     char* path = getenv("PATH");
     char** subpaths = splitstr(path, ':');
 
-
-	if(validate(pgm, subpaths) == 1) {
+	if(validate(cmd->pgm, subpaths) == 1) {
 		
-		pid_t pid;
+		// pid_t pid;
 		int status;
 
 		if ((pid = fork()) == -1) {
@@ -61,21 +63,23 @@ void exec_commands(Pgm* pgm, int background)
 		}
 
 		if(pid == 0) // child
-	    {   
-	        CHILDPID = getpid();
-	        printf("%iChild\n", getpid());
-			run(pgm, NULL, subpaths);
-	    }
-	    else 
-	    {	
-	        printf("%i\n", getpid());
-	        //printf("%i\n", pid);
-	        //printf("%i\n", CHILDPID);
-			if(background != 1)
+    {   
+			// <
+			if(cmd->rstdin != NULL) {
+				freopen(cmd->rstdin, "r", stdin);
+			}
+			if(cmd->rstdout != NULL) {
+				freopen(cmd->rstdout, "w", stdout);
+			}
+			run(cmd->pgm, subpaths);
+    }
+    else 
+    {	
+			if(cmd->bakground != 1)
 				wait(&status);
 
 			free2d((void**)subpaths);
-	    }
+    }
 		
 	} else {
 		printf("Command not found\n");
@@ -85,9 +89,8 @@ void exec_commands(Pgm* pgm, int background)
 
 int validate(Pgm* pgm, char **subpaths) {
 	Pgm *p = pgm;
-	const char * fullpath;
 	do {
-		if((fullpath = valid_path(p->pgmlist[0], subpaths)) == NULL) {
+		if(valid_path(p->pgmlist[0], subpaths) == NULL) {
 			return 0;
 		}
 	} while((p = p->next) != NULL);
@@ -183,4 +186,8 @@ int free2d(void ** src)
     free(src);
 
     return 0;
+}
+
+void leave(int sig) {
+	kill(pid, sig);
 }
