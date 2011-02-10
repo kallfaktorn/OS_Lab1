@@ -1,6 +1,8 @@
 #include "libsh.h"
 #include <sys/stat.h>
 
+pid_t pid;
+
 void run(Pgm* pgm, char **subpaths)
 {
     if(pgm->next == NULL)
@@ -16,22 +18,22 @@ void run(Pgm* pgm, char **subpaths)
     else
     {
         int fd[2];
-        int pid;
+        pid_t pid2;
         
         pipe(fd);
         pid = fork();
-        if(pid == 0)
+        if(pid2 == 0)
         {
             dup2(fd[1], STDOUT_FILENO);
             close(fd[0]);
             run(pgm->next, subpaths);
         }
-        else if(pid > 0)
+        else if(pid2 > 0)
         {
             dup2(fd[0], STDIN_FILENO);
             close(fd[1]);
-			const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
-			free2d((void**)subpaths);
+						const char * fullpath = valid_path(pgm->pgmlist[0], subpaths);
+						free2d((void**)subpaths);
 			
 	        if (execvp(fullpath, pgm->pgmlist) < 0) {     /* execute the command  */
 	             printf("*** ERROR: exec failed: %s\n", pgm->pgmlist[0]);
@@ -52,7 +54,7 @@ void exec_commands(Command *cmd)
 
 	if(validate(cmd->pgm, subpaths) == 1) {
 		
-		pid_t pid;
+		// pid_t pid;
 		int status;
 
 		if ((pid = fork()) == -1) {
@@ -61,7 +63,7 @@ void exec_commands(Command *cmd)
 		}
 
 		if(pid == 0) // child
-	    {   
+    {   
 			// <
 			if(cmd->rstdin != NULL) {
 				freopen(cmd->rstdin, "r", stdin);
@@ -70,14 +72,14 @@ void exec_commands(Command *cmd)
 				freopen(cmd->rstdout, "w", stdout);
 			}
 			run(cmd->pgm, subpaths);
-	    }
-	    else 
-	    {	
+    }
+    else 
+    {	
 			if(cmd->bakground != 1)
 				wait(&status);
 
 			free2d((void**)subpaths);
-	    }
+    }
 		
 	} else {
 		printf("Command not found\n");
@@ -184,4 +186,8 @@ int free2d(void ** src)
     free(src);
 
     return 0;
+}
+
+void leave(int sig) {
+	kill(pid, sig);
 }

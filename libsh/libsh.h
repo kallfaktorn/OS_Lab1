@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "parse.h"
+#include <signal.h>
 
 char** splitstr(const char* str, char delm);
 int free2d(void ** src);
@@ -15,5 +16,7 @@ const char* valid_path(char* command, char** subpaths);
 void exec_commands(Command *cmd);
 int validate(Pgm* pgm, char **subpaths);
 void run(Pgm* pgm, char **subpaths);
+
+void leave(int sig);
 
 #endif

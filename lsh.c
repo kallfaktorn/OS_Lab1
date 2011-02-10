@@ -27,6 +27,7 @@ int main(void)
 {
     Command cmd;
     int n;
+		signal(SIGINT, leave);
 
     while (! done) {
 
@@ -54,7 +55,8 @@ int main(void)
 			
 			/* execute it */
 			n = parse(line, &cmd);
-			PrintCommand(n, &cmd);
+			// PrintCommand(n, &cmd);
+			
 			if(n < 0)
 			{
 				fprintf(stderr, "Parse error\n");
