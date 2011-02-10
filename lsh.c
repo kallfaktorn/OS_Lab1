@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "libsh.h"
 #include "cd.h"
-#include "sig.h"
+
 /*
  * Prototypes
  */
